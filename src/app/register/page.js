@@ -13,14 +13,17 @@ export default function Page() {
     const [password, setPassword] = useState(null)
 
     const router = useRouter()
+    const api = "http://127.0.0.1:8000"
+    
 
     const getToken = async () => {
-        const response = await axios.get("https://415-project.fly.dev/token", {
+        const response = await axios.get(`${api}/token`, {
             headers: {
                 "Content-Type": "application/json",
             },
         });
-        return response
+        console.log(response)
+        return response.data
     }
 
     const handleSubmit = async (e) => {
@@ -34,7 +37,7 @@ export default function Page() {
             password,
         };
         try {
-            const response = await axios.post("https://415-project.fly.dev/api/register", registerPayload, {
+            const response = await axios.post(`${api}/api/register`, registerPayload, {
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": token

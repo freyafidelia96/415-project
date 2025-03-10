@@ -6,15 +6,47 @@ import axios from "axios";
 
 export default function page() {
 
-
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
-
     const router = useRouter()
+    const api = "http://127.0.0.1:8000"
+    const getToken = async () => {
+        const response = await axios.get(`${api}/token`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = await getToken()
+
+        const loginPayload = {
+            email,
+            password,
+        };
+        try {
+            const response = await axios.post(`${api}/api/login`, loginPayload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": token
+
+                },
+            });
+            console.log(response.data)
+            alert("login successful!");
+            //router.push("/dashboard");
+        } catch (error) {
+            console.error("Error registering user:", error);
+            alert(error.response?.data?.message || "Login failed");
+        }
+    };
+
 
     return (
         <div>
-
             <div className="auth-wrapper row">
                 <div className="carbg-section col-md-6"></div>
                 <div className="auth-form-section col-md-6">
@@ -24,7 +56,7 @@ export default function page() {
                                 <span className="heading">Account Login</span>
                                 <span className="info">If you are already a member, you can login with your email address and password.</span>
                             </div>
-                            <form className="auth-form">
+                            <form className="auth-form" onClick={handleSubmit}>
                                 <div className="form-input-group">
                                     <label htmlFor="email">Email address</label>
                                     <input type="email" name="email" onChange={(e) => setEmail(e.target.value)} />
