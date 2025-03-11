@@ -9,35 +9,42 @@ export default function page() {
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
     const router = useRouter()
-    const api = "http://127.0.0.1:8000"
-    const getToken = async () => {
-        const response = await axios.get(`${api}/token`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        return response.data
+    axios.defaults.withCredentials = true;
+    axios.defaults.withXSRFToken = true;
+
+    const getCsrfCookie = async () => {
+        try {
+          await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
+        } catch (error) {
+          console.error('Failed to fetch CSRF cookie', error);
+        }
     }
+    
+    const API_URL = "http://127.0.0.1:8000"
+    const api = axios.create({
+        baseURL: API_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest', 
+        },
+        withCredentials: true,
+      });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = await getToken()
-
         const loginPayload = {
             email,
             password,
         };
         try {
-            const response = await axios.post(`${api}/api/login`, loginPayload, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": token
-
-                },
-            });
+            await getCsrfCookie();
+            const response = await api.post(`api/login`, loginPayload);
             console.log(response.data)
-            alert("login successful!");
-            //router.push("/dashboard");
+            const cleanedToken = response.data.token.split('|')[1];
+            console.log(cleanedToken);
+            localStorage.setItem("token", cleanedToken);
+            localStorage.setItem("userId", response.data.user.id)
+            router.push("/dashboard");
         } catch (error) {
             console.error("Error registering user:", error);
             alert(error.response?.data?.message || "Login failed");
@@ -85,4 +92,4 @@ export default function page() {
             </div>
         </div>
     )
-}
+    }

@@ -14,6 +14,9 @@ export default function Page() {
 
     const router = useRouter()
     const api = "http://127.0.0.1:8000"
+
+    axios.defaults.withCredentials = true;
+    axios.defaults.withXSRFToken = true;
     
 
     const getToken = async () => {
@@ -44,9 +47,7 @@ export default function Page() {
 
                 },
             });
-
-            alert("Registration successful!");
-            //router.push("/dashboard");
+            router.push("/login");
         } catch (error) {
             console.error("Error registering user:", error);
             alert(error.response?.data?.message || "Registration failed. Please try again.");
