@@ -1,3 +1,5 @@
+@import "tailwindcss";
+/* 
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -127,7 +129,7 @@ body {
   padding: 10px 20px;
   border: 1px solid rgb(193, 190, 190);
   border-radius: 3px;
-  color: white;
+  
 }
 
 .remember-me {
@@ -164,4 +166,4 @@ body {
   .form-wrapper {
     padding: 0 5%;
   }
-}
+} */
