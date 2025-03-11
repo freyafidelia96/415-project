@@ -4,102 +4,87 @@ import { useRouter } from 'next/navigation'
 import { useState } from "react";
 import axios from "axios";
 
-
-
-export default function Page() {
-
-    const [email, setEmail] = useState(null)
-    const [name, setName] = useState(null)
-    const [password, setPassword] = useState(null)
-
-    const router = useRouter()
-    const api = "http://127.0.0.1:8000"
-
+export default function RegisterPage() {
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+    const router = useRouter();
+    
     axios.defaults.withCredentials = true;
     axios.defaults.withXSRFToken = true;
-    
 
     const getToken = async () => {
-        const response = await axios.get(`${api}/token`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        console.log(response)
-        return response.data
-    }
+        try {
+            const response = await axios.get("http://127.0.0.1:8000/token", {
+                headers: { "Content-Type": "application/json" },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching token", error);
+            return "";
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = await getToken()
-        console.log("token", token)
-
-        const registerPayload = {
-            email,
-            name,
-            password,
-        };
+        const token = await getToken();
+        
+        const registerPayload = { email, name, password };
         try {
-            const response = await axios.post(`${api}/api/register`, registerPayload, {
+            await axios.post("http://127.0.0.1:8000/api/register", registerPayload, {
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": token
-
+                    "X-CSRF-TOKEN": token,
                 },
             });
             router.push("/login");
         } catch (error) {
             console.error("Error registering user:", error);
-            alert(error.response?.data?.message || "Registration failed. Please try again.");
+            alert(error.response?.data?.message || "Registration failed.");
         }
-
-
-
     };
 
     return (
-        <div>
-            <div className="auth-wrapper row">
-                <div className="carbg-section col-md-6"></div>
-                <div className="auth-form-section col-md-6">
-                    <div className="form-wrapper">
-                        <div className="form">
-                            <div className="form-header">
-                                <span className="heading">Account Sign Up</span>
-                                <span className="info">Become a member and enjoy exclusive promotions.</span>
-                            </div>
-                            <form className="auth-form" onSubmit={handleSubmit}>
-                                <div className="form-input-group">
-                                    <label htmlFor="fullName">Full Name</label>
-                                    <input type="text" name="fullName" onChange={(e) => setName(e.target.value)} />
-                                </div>
-
-                                <div className="form-input-group">
-                                    <label htmlFor="email">Email address</label>
-                                    <input type="email" name="email" onChange={(e) => setEmail(e.target.value)} />
-                                </div>
-
-                                <div className="form-input-group">
-                                    <label htmlFor="password">Password</label>
-                                    <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} />
-                                </div>
-
-
-                                <div className="form-submit">
-                                    <input type="submit" className="button-forms button-red" value="Continue" />
-                                </div>
-
-                                <div className="form-link">
-                                    <span>Already have an account? <span onClick={() => router.push('/login')}>Sign in here</span> </span>
-                                </div>
-
-                            </form>
+        <div className="flex h-screen">
+            {/* Left side: Image */}
+            <div className="hidden md:flex w-1/2 h-full">
+                <img src="/register-bg.jpg" alt="Register Background" className="w-full h-full object-cover" />
+            </div>
+            
+            {/* Right side: Form */}
+            <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+                <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+                    <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">Account Sign Up</h2>
+                    <p className="text-sm text-gray-600 text-center mb-6">
+                        Become a member and enjoy exclusive promotions.
+                    </p>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" className="w-full p-3 border border-gray-300 rounded-md" required
+                                onChange={(e) => setName(e.target.value)} />
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input type="email" className="w-full p-3 border border-gray-300 rounded-md" required
+                                onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Password</label>
+                            <input type="password" className="w-full p-3 border border-gray-300 rounded-md" required
+                                onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        <button type="submit" className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                            Sign Up
+                        </button>
+                    </form>
+                    <div className="text-center mt-4">
+                        <span className="text-sm text-gray-600">
+                            Already have an account? <span className="text-blue-600 cursor-pointer hover:underline" onClick={() => router.push('/login')}>Sign in here</span>
+                        </span>
                     </div>
                 </div>
             </div>
-
         </div>
-    )
-
+    );
 }

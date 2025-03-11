@@ -64,6 +64,12 @@ export default function Page() {
                   Amount to Pay
                 </th>
                 <th className="px-6 py-3 text-left text-gray-500 font-medium">
+                  Monthly Installment amount
+                </th>
+                <th className="px-6 py-3 text-left text-gray-500 font-medium">
+                  Amount Paid
+                </th>
+                <th className="px-6 py-3 text-left text-gray-500 font-medium">
                   Plan
                 </th>
                 <th className="px-6 py-3 text-left text-gray-500 font-medium">
@@ -108,6 +114,12 @@ export default function Page() {
                     <td className="px-6 py-4 text-black">${loan.amount}</td>
                     <td className="px-6 py-4 text-black">
                       ${loan.total_amount_to_pay}
+                    </td>
+                    <td className="px-6 py-4 text-black">
+                      ${loan.amount_per_month}
+                    </td>
+                    <td className="px-6 py-4 text-black">
+                      ${loan.total_paid}
                     </td>
                     <td className="px-6 py-4 text-black">
                       {loan.repayment_plan} months
