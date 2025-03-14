@@ -32,7 +32,7 @@ export default function Page() {
     const userId = localStorage.getItem("userId");
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/loans/${userId}`
+        `https://415-project.fly.dev/api/loans/${userId}`
       );
       setLoans(response.data.data);
     } catch (error) {

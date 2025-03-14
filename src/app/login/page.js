@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   const getCsrfCookie = async () => {
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie", {
+      await axios.get("https://415-project.fly.dev/sanctum/csrf-cookie", {
         withCredentials: true,
       });
     } catch (error) {
@@ -26,7 +26,7 @@ export default function LoginPage() {
     }
   };
 
-  const API_URL = "http://127.0.0.1:8000";
+  const API_URL = "https://415-project.fly.dev";
   const api = axios.create({
     baseURL: API_URL,
     headers: {

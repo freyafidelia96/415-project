@@ -33,7 +33,7 @@ export default function Page() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:8000/api/loans/history/${id}`
+        `https://415-project.fly.dev/api/loans/history/${id}`
       );
       setLoanData(response.data.data.loan);
       setPaymentHistory(response.data.data.payments);

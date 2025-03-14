@@ -19,7 +19,7 @@ export default function RegisterPage() {
 
   const getToken = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/token", {
+      const response = await axios.get("https://415-project.fly.dev/token", {
         headers: { "Content-Type": "application/json" },
       });
       return response.data;
@@ -38,7 +38,7 @@ export default function RegisterPage() {
     const registerPayload = { email, name, password };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/register", registerPayload, {
+      await axios.post("https://415-project.fly.dev/api/register", registerPayload, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-TOKEN": token,

@@ -41,7 +41,7 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       const userId = localStorage.getItem("userId");
       try {
-        const response = await axios.get(`http://localhost:8000/api/dashboard/${userId}`);
+        const response = await axios.get(`https://415-project.fly.dev/api/dashboard/${userId}`);
         setDashboardData(response.data.data || {});
       } catch (error) {
         console.error("Error fetching dashboard data:", error.response ? error.response.data : error.message);

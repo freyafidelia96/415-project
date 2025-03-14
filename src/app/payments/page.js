@@ -27,7 +27,7 @@ export default function Page() {
 
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/loans/payment/${userId}`);
+      const response = await axios.get(`https://415-project.fly.dev/api/loans/payment/${userId}`);
       setPayments(response.data.data);
       setLoading(false);
     } catch (error) {
