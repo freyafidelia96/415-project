@@ -1,117 +1,167 @@
+"use client";
+import { useState, useEffect } from "react";
 import SideNav from "../components/SideNav";
+import { FaUsers, FaExclamationTriangle, FaMoneyBillWave, FaCalendarCheck, FaDollarSign, FaHandHoldingUsd } from "react-icons/fa";
+import axios from "axios";
 
-export default function Page() {
-  const stats = [
-    {
-      title: "Total Outstanding",
-      value: "$45,231.89",
-      change: "+20.1% from last month",
-    },
-    { title: "Active Loans", value: "127", change: "+4 new this month" },
-    {
-      title: "Overdue Payments",
-      value: "23",
-      change: "Requires attention",
-      alert: true,
-    },
-    {
-      title: "On-time Payments",
-      value: "89%",
-      change: "+2% from last month",
-      success: true,
-    },
-  ];
+export default function Dashboard() {
+  const [dashboardData, setDashboardData] = useState({
+    total_loans: 0,
+    active_loans: 0,
+    overdue_loans: 0,
+    total_repayments: 0,
+    recent_loans: [],
+    overdue_accounts: [],
+    total_loans_given: 0,
+    total_amount_collected: 0,
+  });
 
-  const payments = [
-    {
-      name: "Sarah Johnson",
-      date: "3/28/2024",
-      amount: "+$850",
-      initials: "SJ",
-      color: "bg-red-500",
-    },
-    {
-      name: "Michael Brown",
-      date: "3/27/2024",
-      amount: "+$1200",
-      initials: "MB",
-      color: "bg-red-600",
-    },
-    {
-      name: "Emily Davis",
-      date: "3/26/2024",
-      amount: "+$750",
-      initials: "ED",
-      color: "bg-blue-500",
-    },
-  ];
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  
+  const getStatusBadgeStyle = (status) => {
+    switch (status) {
+      case "paid":
+        return "bg-green-100 text-green-800";
+      case "defaulted":
+        return "bg-red-100 text-red-800";
+      case "partial":
+        return "bg-blue-100 text-blue-800";
+      case "ongoing":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  }
+  
+
+  useEffect(() => {
+    
+    const fetchDashboardData = async () => {
+      const userId = localStorage.getItem("userId");
+      try {
+        const response = await axios.get(`https://415-project.fly.dev/api/dashboard/${userId}`);
+        setDashboardData(response.data.data || {});
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error.response ? error.response.data : error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
-    <section className="flex">
+    <div className="flex h-screen bg-gray-100">
       <SideNav />
-      <div className="w-full">
-        <header className="border-b border-black w-full p-2">
-          <h2 className="text-xl font-semibold">Loan Management</h2>
-        </header>
-        <div className="p-4">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-        </div>
 
-        <div className="pr-8 pl-8">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-6 ">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="bg-white pt-4 pb-4 pr-10 pl-10 rounded shadow-md"
-              >
-                <h2 className="text-sm text-gray-500">{stat.title}</h2>
-                <p className="text-2xl font-bold">{stat.value}</p>
-                <p
-                  className={`text-sm ${
-                    stat.alert
-                      ? "text-red-500"
-                      : stat.success
-                      ? "text-green-500"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {stat.change}
-                </p>
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <StatCard 
+                  title="Total Loans" 
+                  value={dashboardData.total_loans.toLocaleString()} 
+                  icon={<FaUsers className="text-blue-500" size={24} />} 
+                  bgColor="bg-blue-100"
+                />
+                <StatCard 
+                  title="Active Loans" 
+                  value={dashboardData.active_loans.toLocaleString()} 
+                  icon={<FaCalendarCheck className="text-green-500" size={24} />} 
+                  bgColor="bg-green-100"
+                />
+                <StatCard 
+                  title="Overdue Loans" 
+                  value={dashboardData.overdue_loans ? dashboardData.overdue_loans.toLocaleString() : 0} 
+                  icon={<FaExclamationTriangle className="text-red-500" size={24} />} 
+                  bgColor="bg-red-100"
+                />
+                <StatCard 
+                  title="Total Repayments" 
+                  value={`#${dashboardData.total_repayments ? dashboardData.total_repayments.toLocaleString() : 0}`} 
+                  icon={<FaMoneyBillWave className="text-emerald-500" size={24} />} 
+                  bgColor="bg-emerald-100"
+                />
+                <StatCard 
+                  title="Total Loans Given" 
+                  value={`#${dashboardData.total_loans_given.toLocaleString()}`} 
+                  icon={<FaDollarSign className="text-yellow-500" size={24} />} 
+                  bgColor="bg-yellow-100"
+                />
+                <StatCard 
+                  title="Total Amount Collected" 
+                  value={`#${dashboardData.total_amount_collected.toLocaleString()}`} 
+                  icon={<FaHandHoldingUsd className="text-purple-500" size={24} />} 
+                  bgColor="bg-purple-100"
+                />
               </div>
-            ))}
-          </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-2">Recent Payments</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Latest payment transactions from debtors
-            </p>
-
-            {payments.map((payment, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between border-b py-4 last:border-0"
-              >
-                <div className="flex items-center space-x-4">
-                  <div
-                    className={`${payment.color} text-white font-bold w-10 h-10 flex items-center justify-center rounded-full`}
-                  >
-                    {payment.initials}
+              
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 className="text-xl font-semibold mb-4">Recent Loans</h2>
+                {dashboardData.recent_loans.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {dashboardData.recent_loans.map((loan) => (
+                          <tr key={loan.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">{loan.customer_name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">#{loan.amount.toLocaleString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{loan.repayment_plan} months</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{new Date(loan.start_date).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 py-1 rounded-full text-xs ${getStatusBadgeStyle(loan.status)}`}>
+                                {loan.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  <div>
-                    <p className="font-semibold">{payment.name}</p>
-                    <p className="text-sm text-gray-500">{payment.date}</p>
-                  </div>
-                </div>
-                <p className="text-green-600 font-bold">{payment.amount}</p>
+                ) : (
+                  <p className="text-gray-500">No recent loans to display.</p>
+                )}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
+      </main>
+    </div>
+  );
+}
 
+// Stat Card Component
+function StatCard({ title, value, icon, bgColor }) {
+  return (
+    <div className={`${bgColor} rounded-lg shadow-md p-6`}>
+      <div className="flex items-center">
+        <div className="flex-shrink-0 mr-4">{icon}</div>
+        <div>
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl font-semibold text-gray-900">{value}</p>
         </div>
-      
-    </section>
+      </div>
+    </div>
   );
 }
