@@ -30,7 +30,7 @@ export default function PaymentModal({ isOpen, onClose }) {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:8000/api/loans/${userId}`
+        `https://415-project.fly.dev/api/loans/${userId}`
       );
       setLoans(response.data.data);
       setLoading(false);
@@ -53,7 +53,7 @@ export default function PaymentModal({ isOpen, onClose }) {
     };
 
     try {
-      await axios.post(`http://localhost:8000/api/loans/payment/${loadId}`, payload);
+      await axios.post(`https://415-project.fly.dev/api/loans/payment/${loadId}`, payload);
       setSuccess(true);
       setTimeout(() => {
         onClose();

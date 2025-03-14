@@ -14,7 +14,7 @@ export default function LoanModal({ isOpen, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const API_URL = "http://127.0.0.1:8000";
+  const API_URL = "https://415-project.fly.dev";
 
   const api = axios.create({
     baseURL: API_URL,
